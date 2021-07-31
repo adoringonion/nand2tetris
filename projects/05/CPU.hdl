@@ -40,4 +40,40 @@ CHIP CPU {
 
     PARTS:
     // Put your code here:
+
+    // A命令の時は入力値をそのまま通す
+    Mux16(a=instruction, b=aluout, sel=instruction[15], out=ain);
+    // Aレジスタに保存されるのはA命令の時かC命令のdistで指定されている時
+    // Aレジスタの時=iビットが0の時をOrに入れたいので反転させる 
+    Not(in=instruction[15], out=notibit);
+    Or(a=notibit, b=instruction[5], out=aload);
+    // A命令の時は15ビットの値がそのままアドレスMに保存される
+    ARegister(in=ain, load=aload, out=aout, out[0..14]=addressM);
+
+    // aビット(instruction[12])が0の時はAレジスタ。1の時はメモリ入力
+    Mux16(a=aout, b=inM, sel=instruction[12], out=yin);
+
+    // Dレジスタに保存されるのはd2 == 1 かつ i == 1
+    And(a=instruction[4], b=instruction[15], out=dload);
+    DRegister(in=aluout, load=dload, out=dout);
+
+    ALU(
+        x=dout, 
+        y=yin, 
+        zx=instruction[11], 
+        nx=instruction[10], 
+        zy=instruction[9], 
+        ny=instruction[8], 
+        f=instruction[7], 
+        no=instruction[6], 
+        out=aluout, out=outM zr=zr, ng=ng
+        );
+
+    // Mに書き込まれるのはd3 == 1 かつ i == 1 (C命令)の時
+    And(a=instruction[3], b=instruction[15], out=writeM);
+
+    
+    PC(in=aout, load=, inc=, reset=reset, out=pc);
+
+    Mux16(a=, b=, sel=, out=);
 }
