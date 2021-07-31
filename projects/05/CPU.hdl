@@ -66,14 +66,22 @@ CHIP CPU {
         ny=instruction[8], 
         f=instruction[7], 
         no=instruction[6], 
-        out=aluout, out=outM zr=zr, ng=ng
-        );
+        out=aluout, out=outM, zr=zr, ng=ng);
 
     // Mに書き込まれるのはd3 == 1 かつ i == 1 (C命令)の時
     And(a=instruction[3], b=instruction[15], out=writeM);
 
-    
-    PC(in=aout, load=, inc=, reset=reset, out=pc);
+    And(a=instruction[1], b=zr, out=jmp1);
+    And(a=instruction[2], b=ng, out=jmp2);
 
-    Mux16(a=, b=, sel=, out=);
+    Or(a=zr, b=ng, out=orzrng);
+    Not(in=orzrng, out=notzrng);
+    And(a=notzrng, b=instruction[0], out=jmp3);
+
+    Or(a=jmp1, b=jmp2, out=jmp4);
+    Or(a=jmp4, b=jmp3, out=jmp5);
+    And(a=jmp5, b=instruction[15], out=pcload);
+    Not(in=pcload, out=pcinc);
+    
+    PC(in=aout, load=pcload, inc=pcinc, reset=reset, out[0..14]=pc);
 }
