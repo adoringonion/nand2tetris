@@ -1,7 +1,6 @@
-use parser::Parser;
+use parser::{CommandType, Parser};
 
-use crate::parser::CommandType;
-
+mod code;
 mod parser;
 
 fn main() {
@@ -11,7 +10,7 @@ fn main() {
     parser.advance();
     parser.advance();
 
-    while parser.has_more_commands() {
+    loop {
         println!("{:?}", parser);
         let command = parser.command_type();
 
@@ -24,11 +23,14 @@ fn main() {
                 let dest = parser.dest();
                 let comp = parser.comp();
                 let jump = parser.jump();
-                vec.push(dest);
-                vec.push(comp);
-                vec.push(jump);
+                println!("{}", code::dest(&dest));
             }
         }
+
+        if !parser.has_more_commands() {
+            break;
+        }
+        
         parser.advance();
     }
 
