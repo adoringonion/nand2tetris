@@ -1,9 +1,9 @@
 use std::{
-    env,
     fs::File,
     io::{BufRead, BufReader, Lines},
     vec::IntoIter,
 };
+use anyhow::{Result,Context};
 
 pub enum CommandType {
     ACommand,
@@ -19,21 +19,18 @@ pub struct Parser {
 }
 
 impl Parser {
-    pub fn new() -> Parser {
-        let args: Vec<String> = env::args().collect();
+    pub fn new(file: &str) -> Result<Parser> {
 
-        let path = &args[1];
-
-        let f = File::open(path).expect("file not found");
+        let f = File::open(file).with_context(|| format!("not find {}", file))?;
 
         let lines = BufReader::new(f).lines();
         let tokens = pick_out_tokens(lines);
 
-        Parser {
+        Ok(Parser {
             tokens,
             current_token: None,
             next_token: None,
-        }
+        })
     }
 
     pub fn has_more_commands(&self) -> bool {
