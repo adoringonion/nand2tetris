@@ -1,5 +1,6 @@
 use std::collections::HashMap;
 
+#[derive(Debug)]
 pub struct SymbolTable {
     pub table: HashMap<String, u16>,
 }
@@ -45,7 +46,37 @@ impl SymbolTable {
         self.table.contains_key(name)
     }
 
-    pub fn get_address(&self, name: &String) -> Option<&u16> {
-        self.table.get(name)
+    pub fn get_address(&self, name: &String) -> u16 {
+        *self.table.get(name).unwrap()
     }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::SymbolTable;
+
+    #[test]
+    fn init_symbol() {
+        let symbol_table = SymbolTable::new();
+        assert!(symbol_table.contains(&String::from("SP")));
+        assert!(!symbol_table.contains(&String::from("NOTCONTAIN")));
+    }
+
+    #[test]
+    fn add_entry() {
+        let mut symbol_table = SymbolTable::new();
+        assert!(!symbol_table.contains(&String::from("NEW")));
+        symbol_table.add_entry(&String::from("NEW"), 0);
+        assert!(symbol_table.contains(&String::from("NEW")));
+    }
+
+    #[test]
+    fn get_address() {
+        let mut symbol_table = SymbolTable::new();
+        assert_eq!(symbol_table.get_address(&String::from("R0")), 0);
+
+        symbol_table.add_entry(&String::from("NEW"), 20);
+        assert_eq!(symbol_table.get_address(&String::from("NEW")), 20);
+    }
+
 }

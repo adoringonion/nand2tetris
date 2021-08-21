@@ -3,7 +3,7 @@ use std::{
     io::{BufRead, BufReader, Lines},
     vec::IntoIter,
 };
-use anyhow::{Result,Context};
+use anyhow::Result;
 
 pub enum CommandType {
     ACommand,
@@ -11,7 +11,7 @@ pub enum CommandType {
     LCommand,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Parser {
     tokens: IntoIter<String>,
     current_token: Option<String>,
@@ -19,18 +19,23 @@ pub struct Parser {
 }
 
 impl Parser {
-    pub fn new(file: &str) -> Result<Parser> {
+    pub fn new(file: File) -> Result<Parser> {
 
-        let f = File::open(file).with_context(|| format!("not find {}", file))?;
 
-        let lines = BufReader::new(f).lines();
+        let lines = BufReader::new(file).lines();
         let tokens = pick_out_tokens(lines);
 
-        Ok(Parser {
+        let mut parser = Self {
             tokens,
             current_token: None,
             next_token: None,
-        })
+        };
+
+        // 初期値を設定するため、二回advanceを呼び出す
+        parser.advance();
+        parser.advance();
+
+        Ok(parser)
     }
 
     pub fn has_more_commands(&self) -> bool {
