@@ -1,6 +1,6 @@
 use std::{env, fs::File, io::Write};
 
-use anyhow::{Context, Result};
+use anyhow::{Context, Result, anyhow};
 use parser::{CommandType, Parser};
 
 use crate::symbol_table::SymbolTable;
@@ -11,6 +11,9 @@ mod symbol_table;
 fn main() -> Result<()> {
     let args: Vec<String> = env::args().collect();
     let file_path = &args[1];
+    if !file_path.ends_with(".asm") {
+        return Err(anyhow!("Invalid file extension: {}", file_path));
+    }
     let file = File::open(file_path).with_context(|| format!("not find {}", file_path))?;
 
     let mut pre_parser = Parser::new(file)?;
