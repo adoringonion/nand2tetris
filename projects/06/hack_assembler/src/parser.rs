@@ -81,46 +81,45 @@ impl Parser {
 
     pub fn dest(&self) -> String {
         let current_token = self.current_token.as_ref().unwrap();
-        if !current_token.contains("=") {
-            return String::from("null");
+        if let Some(index) = current_token.find("=") {
+            return current_token[..index].to_string();
         }
 
-        let equal_index = current_token.find("=").unwrap();
-        return current_token[..equal_index].to_string();
+        return String::from("null");
     }
 
     pub fn comp(&self) -> String {
         let current_token = self.current_token.as_ref().unwrap();
-        if current_token.contains("=") && current_token.contains(";") {
-            let equal_index = current_token.find("=").unwrap();
-            let semi_index = current_token.find(";").unwrap();
-            return current_token[equal_index + 1..semi_index].to_string();
-        } else if current_token.contains("=") {
-            let equal_index = current_token.find("=").unwrap();
-            return current_token[equal_index + 1..].to_string();
-        } else {
-            let semi_index = current_token.find(";").unwrap();
-            return current_token[..semi_index].to_string();
+        match current_token.find("=") {
+            Some(equal_index) => match current_token.find(";") {
+                Some(semicolon_index) => {
+                    current_token[equal_index+1..semicolon_index].to_string()
+                }
+                None => current_token[equal_index+1..].to_string(),
+            },
+            None => match current_token.find(";") {
+                Some(semicolon_index) => current_token[..semicolon_index].to_string(),
+                None => current_token.to_string(),
+            },
         }
     }
 
     pub fn jump(&self) -> String {
         let current_token = self.current_token.as_ref().unwrap();
-        if !current_token.contains(";") {
-            return String::from("null");
+        if let Some(index) = current_token.find(";") {
+            return current_token[..index].to_string();
         }
 
-        let semi_index = current_token.find(";").unwrap();
-        return current_token[semi_index + 1..].to_string();
+        return String::from("null");
     }
 }
 
-fn is_a_command(line: &String) -> bool {
-    line.starts_with("@")
+fn is_a_command(token: &String) -> bool {
+    token.starts_with("@")
 }
 
-fn is_l_command(line: &String) -> bool {
-    line.starts_with("(")
+fn is_l_command(token: &String) -> bool {
+    token.starts_with("(")
 }
 
 fn pick_out_tokens(mut line: String) -> String {
