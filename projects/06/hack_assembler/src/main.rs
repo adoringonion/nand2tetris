@@ -4,6 +4,7 @@ use anyhow::Result;
 use parser::{CommandType, Parser};
 mod code;
 mod parser;
+mod symbol_table;
 
 fn main() -> Result<()> {
     let args: Vec<String> = env::args().collect();
