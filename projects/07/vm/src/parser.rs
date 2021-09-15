@@ -5,6 +5,7 @@ use std::{
     vec::IntoIter,
 };
 
+#[derive(Debug)]
 pub enum CommandType {
     CArithmetic,
     CPush,

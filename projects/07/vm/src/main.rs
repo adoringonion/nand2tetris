@@ -1,7 +1,7 @@
 use anyhow::{anyhow, Context, Result};
 use std::{env, fs::File};
 
-use crate::parser::Parser;
+use crate::parser::{CommandType, Parser};
 
 mod code_writer;
 mod parser;
@@ -15,12 +15,15 @@ fn main() -> Result<()> {
     let file = File::open(file_path).with_context(|| format!("not find {}", file_path))?;
 
     let mut parser = Parser::new(file);
+    let mut code_writer = code_writer::CodeWriter::new();
 
     loop {
         match parser.command_type() {
-            parser::CommandType::CArithmetic => todo!(),
-            parser::CommandType::CPush => todo!(),
-            _ => todo!(),
+            CommandType::CArithmetic => code_writer.write_arithmetic(&parser.arg1())?,
+            CommandType::CPush | CommandType::CPop => {
+                code_writer.write_push_pop(parser.command_type(), &parser.arg1(), parser.arg2())?
+            }
+            _ => Err(anyhow!("Invalid command type: {:?}", parser.command_type()))?,
         }
 
         if !parser.has_more_commands() {
