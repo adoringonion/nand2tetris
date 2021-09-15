@@ -5,12 +5,16 @@ use crate::parser::CommandType;
 
 pub struct CodeWriter {
     pub file: File,
+    label_count: usize,
 }
 
 impl CodeWriter {
     pub fn new() -> Self {
         let file = File::create("out.asm").unwrap();
-        CodeWriter { file }
+        CodeWriter {
+            file,
+            label_count: 0,
+        }
     }
 
     pub fn set_file_name(&mut self, file_name: &str) {
@@ -48,12 +52,78 @@ impl CodeWriter {
                 @SP
                 M=M+1"
             ))?),
-            "eq" => Ok(self.file.write_fmt(format_args!(
-                "
-                
-            "))?),
-            "gt" => Ok(self.file.write_fmt(format_args!(""))?),
-            "lt" => Ok(self.file.write_fmt(format_args!(""))?),
+            "eq" => {
+                self.label_count += 1;
+                Ok(self.file.write_fmt(format_args!(
+                    "
+                @SP
+                A=M-1
+                D=M
+                A=A-1
+                D=M-D
+                @EQ.{}
+                D;JEQ
+                M=0
+                @CONTINUE.{}
+                0;JMP
+                (EQ.{})
+                M=-1
+                @SP
+                M=M+1
+                (CONTINUE.{})
+                @SP
+                M=M+1",
+                    self.label_count, self.label_count, self.label_count, self.label_count
+                ))?)
+            }
+            "gt" => {
+                self.label_count += 1;
+                Ok(self.file.write_fmt(format_args!(
+                    "
+                @SP
+                A=M-1
+                D=M
+                A=A-1
+                D=M-D
+                @GT.{}
+                D;JGT
+                M=0
+                @CONTINUE.{}
+                0;JMP
+                (GT.{})
+                M=-1
+                @SP
+                M=M+1
+                (CONTINUE.{})
+                @SP
+                M=M+1",
+                    self.label_count, self.label_count, self.label_count, self.label_count
+                ))?)
+            }
+            "lt" => {
+                self.label_count += 1;
+                Ok(self.file.write_fmt(format_args!(
+                    "
+                @SP
+                A=M-1
+                D=M
+                A=A-1
+                D=M-D
+                @LT.{}
+                D;JLT
+                M=0
+                @CONTINUE.{}
+                0;JMP
+                (LT.{})
+                M=-1
+                @SP
+                M=M+1
+                (CONTINUE.{})
+                @SP
+                M=M+1",
+                    self.label_count, self.label_count, self.label_count, self.label_count
+                ))?)
+            }
             "and" => Ok(self.file.write_fmt(format_args!(
                 "
                 @SP
