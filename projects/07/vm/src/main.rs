@@ -1,5 +1,5 @@
 use anyhow::{anyhow, Context, Result};
-use std::{env, fs::File};
+use std::{env, fs::File, path::Path};
 
 use crate::parser::{CommandType, Parser};
 
@@ -15,7 +15,7 @@ fn main() -> Result<()> {
     let file = File::open(file_path).with_context(|| format!("not find {}", file_path))?;
 
     let mut parser = Parser::new(file);
-    let mut code_writer = code_writer::CodeWriter::new();
+    let mut code_writer = code_writer::CodeWriter::new(Path::new(file_path).file_stem().unwrap().to_str().unwrap());
 
     loop {
         match parser.command_type() {

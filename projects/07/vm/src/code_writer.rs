@@ -4,14 +4,16 @@ use std::{fs::File, io::Write};
 use crate::parser::CommandType;
 
 pub struct CodeWriter {
+    file_name: String,
     pub file: File,
     label_count: usize,
 }
 
 impl CodeWriter {
-    pub fn new() -> Self {
-        let file = File::create("out.asm").unwrap();
+    pub fn new(file_name: &str) -> Self {
+        let file = File::create(format!("{}.asm", file_name)).unwrap();
         CodeWriter {
+            file_name: file_name.to_string(),
             file,
             label_count: 0,
         }
@@ -25,132 +27,177 @@ impl CodeWriter {
     pub fn write_arithmetic(&mut self, command: &str) -> Result<()> {
         match command {
             "add" => Ok(self.file.write_fmt(format_args!(
-                "
-                @SP
-                A=M-1
-                D=M
-                A=A-1
-                M=M+D
-                @SP
-                M=M+1"
+"@SP
+M=M-1
+A=M
+D=M
+@SP
+M=M-1
+A=M
+M=D+M
+@SP
+M=M+1
+"
             ))?),
             "sub" => Ok(self.file.write_fmt(format_args!(
-                "
-                @SP
-                A=M-1
-                D=M
-                A=A-1
-                M=M-D
-                @SP
-                M=M+1"
+"@SP
+M=M-1
+A=M
+D=M
+@SP
+M=M-1
+A=M
+M=M-D
+@SP
+M=M+1
+"
             ))?),
             "neg" => Ok(self.file.write_fmt(format_args!(
-                "   
-                @SP
-                A=M-1
-                M=-M
-                @SP
-                M=M+1"
+"@SP
+M=M-1
+A=M
+M=-M
+@SP
+M=M+1
+"
             ))?),
             "eq" => {
                 self.label_count += 1;
                 Ok(self.file.write_fmt(format_args!(
-                    "
-                @SP
-                A=M-1
-                D=M
-                A=A-1
-                D=M-D
-                @EQ.{}
-                D;JEQ
-                M=0
-                @CONTINUE.{}
-                0;JMP
-                (EQ.{})
-                M=-1
-                @SP
-                M=M+1
-                (CONTINUE.{})
-                @SP
-                M=M+1",
+"@SP
+M=M-1
+A=M
+D=M
+@SP
+M=M-1
+A=M
+D=M-D
+@EQ.{}
+D;JEQ
+D=0
+@SP
+A=M
+M=D
+@SP
+M=M+1
+@CONTINUE.{}
+0;JMP
+(EQ.{})
+@0
+D=A
+D=D-1
+@SP
+A=M
+M=D
+@SP
+M=M+1
+(CONTINUE.{})
+",
                     self.label_count, self.label_count, self.label_count, self.label_count
                 ))?)
             }
             "gt" => {
                 self.label_count += 1;
                 Ok(self.file.write_fmt(format_args!(
-                    "
-                @SP
-                A=M-1
-                D=M
-                A=A-1
-                D=M-D
-                @GT.{}
-                D;JGT
-                M=0
-                @CONTINUE.{}
-                0;JMP
-                (GT.{})
-                M=-1
-                @SP
-                M=M+1
-                (CONTINUE.{})
-                @SP
-                M=M+1",
+"@SP
+M=M-1
+A=M
+D=M
+@SP
+M=M-1
+A=M
+D=M-D
+@GT.{}
+D;JGT
+D=0
+@SP
+A=M
+M=D
+@SP
+M=M+1
+@CONTINUE.{}
+0;JMP
+(GT.{})
+D=0
+D=D-1
+@SP
+A=M
+M=D
+@SP
+M=M+1
+(CONTINUE.{})
+",
                     self.label_count, self.label_count, self.label_count, self.label_count
                 ))?)
             }
             "lt" => {
                 self.label_count += 1;
                 Ok(self.file.write_fmt(format_args!(
-                    "
-                @SP
-                A=M-1
-                D=M
-                A=A-1
-                D=M-D
-                @LT.{}
-                D;JLT
-                M=0
-                @CONTINUE.{}
-                0;JMP
-                (LT.{})
-                M=-1
-                @SP
-                M=M+1
-                (CONTINUE.{})
-                @SP
-                M=M+1",
+"@SP
+M=M-1
+A=M
+D=M
+@SP
+M=M-1
+A=M
+D=M-D
+@LT.{}
+D;JLT
+D=0
+@SP
+A=M
+M=D
+@SP
+M=M+1
+@CONTINUE.{}
+0;JMP
+(LT.{})
+D=0
+D=D-1
+@SP
+A=M
+M=D
+@SP
+M=M+1
+(CONTINUE.{})
+",
                     self.label_count, self.label_count, self.label_count, self.label_count
                 ))?)
             }
             "and" => Ok(self.file.write_fmt(format_args!(
-                "
-                @SP
-                A=M-1
-                D=M
-                A=A-1
-                M=M&D
-                @SP
-                M=M+1"
+"@SP
+M=M-1
+A=M
+D=M
+@SP
+M=M-1
+A=M
+M=M&D
+@SP
+M=M+1
+"
             ))?),
             "or" => Ok(self.file.write_fmt(format_args!(
-                "
-                @SP
-                A=M-1
-                D=M
-                A=A-1
-                M=M|D
-                @SP
-                M=M+1"
+"@SP
+M=M-1
+A=M
+D=M
+@SP
+M=M-1
+A=M
+M=M|D
+@SP
+M=M+1
+"
             ))?),
             "not" => Ok(self.file.write_fmt(format_args!(
-                "
-                @SP
-                A=M-1
-                M=!M
-                @SP
-                M=M+1"
+"@SP
+M=M-1
+A=M
+M=!M
+@SP
+M=M+1
+"
             ))?),
             _ => Err(anyhow!("Invalid arithmetic command: {}", command)),
         }
@@ -165,14 +212,15 @@ impl CodeWriter {
         match command {
             CommandType::CPush => match segment {
                 "constant" => Ok(self.file.write_fmt(format_args!(
-                    "
-                    @{}
-                    D=A
-                    @SP
-                    A=M
-                    M=D
-                    @SP
-                    M=M+1",
+"
+@{}
+D=A
+@SP
+A=M
+M=D
+@SP
+M=M+1
+",
                     index
                 ))?),
                 "local" => Ok(self.file.write_fmt(format_args!(
@@ -262,18 +310,15 @@ impl CodeWriter {
                     index
                 ))?),
                 "static" => Ok(self.file.write_fmt(format_args!(
-                    "@{}
-                    D=A
-                    @16
-                    A=A+D
+                    "@{}.{}
                     D=M
                     @SP
                     A=M
                     M=D
                     @SP
-                    M=M+1
+                    M=M+1 
                     ",
-                    index
+                    self.file_name, index
                 ))?),
                 _ => Err(anyhow!("Invalid segment: {}", segment)),
             },
@@ -375,20 +420,14 @@ impl CodeWriter {
                     index
                 ))?),
                 "static" => Ok(self.file.write_fmt(format_args!(
-                    "@{}
-                    D=A
-                    @16
-                    D=A+D
-                    @R13
-                    M=D
-                    @SP
-                    AM=M-1
-                    D=M
-                    @R13
+                    "@SP
+                    M=M-1
                     A=M
+                    D=M
+                    @{}.{}
                     M=D
                     ",
-                    index
+                    self.file_name, index
                 ))?),
                 _ => Err(anyhow!("Invalid segment: {}", segment)),
             },
