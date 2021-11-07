@@ -22,8 +22,13 @@ fn main() -> Result<()> {
             CommandType::CArithmetic => code_writer.write_arithmetic(&parser.arg1())?,
             CommandType::CPush | CommandType::CPop => {
                 code_writer.write_push_pop(parser.command_type(), &parser.arg1(), parser.arg2())?
-            }
-            _ => Err(anyhow!("Invalid command type: {:?}", parser.command_type()))?,
+            },
+            CommandType::CLabel => code_writer.write_label(&parser.arg1())?,
+            CommandType::CGoto => code_writer.write_goto(&parser.arg1())?,
+            CommandType::CIf => code_writer.write_if(&parser.arg1())?,
+            CommandType::CCall => code_writer.write_call(&parser.arg1(), parser.arg2())?,
+            CommandType::CReturn => code_writer.write_return()?,
+            CommandType::CFunction => code_writer.write_function(&parser.arg1(), parser.arg2())?,
         }
 
         if !parser.has_more_commands() {

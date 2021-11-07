@@ -27,7 +27,7 @@ impl CodeWriter {
     pub fn write_arithmetic(&mut self, command: &str) -> Result<()> {
         match command {
             "add" => Ok(self.file.write_fmt(format_args!(
-"@SP
+                "@SP
 M=M-1
 A=M
 D=M
@@ -40,7 +40,7 @@ M=M+1
 "
             ))?),
             "sub" => Ok(self.file.write_fmt(format_args!(
-"@SP
+                "@SP
 M=M-1
 A=M
 D=M
@@ -53,7 +53,7 @@ M=M+1
 "
             ))?),
             "neg" => Ok(self.file.write_fmt(format_args!(
-"@SP
+                "@SP
 M=M-1
 A=M
 M=-M
@@ -64,7 +64,7 @@ M=M+1
             "eq" => {
                 self.label_count += 1;
                 Ok(self.file.write_fmt(format_args!(
-"@SP
+                    "@SP
 M=M-1
 A=M
 D=M
@@ -99,7 +99,7 @@ M=M+1
             "gt" => {
                 self.label_count += 1;
                 Ok(self.file.write_fmt(format_args!(
-"@SP
+                    "@SP
 M=M-1
 A=M
 D=M
@@ -133,7 +133,7 @@ M=M+1
             "lt" => {
                 self.label_count += 1;
                 Ok(self.file.write_fmt(format_args!(
-"@SP
+                    "@SP
 M=M-1
 A=M
 D=M
@@ -165,7 +165,7 @@ M=M+1
                 ))?)
             }
             "and" => Ok(self.file.write_fmt(format_args!(
-"@SP
+                "@SP
 M=M-1
 A=M
 D=M
@@ -178,7 +178,7 @@ M=M+1
 "
             ))?),
             "or" => Ok(self.file.write_fmt(format_args!(
-"@SP
+                "@SP
 M=M-1
 A=M
 D=M
@@ -191,7 +191,7 @@ M=M+1
 "
             ))?),
             "not" => Ok(self.file.write_fmt(format_args!(
-"@SP
+                "@SP
 M=M-1
 A=M
 M=!M
@@ -212,7 +212,7 @@ M=M+1
         match command {
             CommandType::CPush => match segment {
                 "constant" => Ok(self.file.write_fmt(format_args!(
-"
+                    "
 @{}
 D=A
 @SP
@@ -433,5 +433,35 @@ M=M+1
             },
             _ => Err(anyhow!("Invalid command: {:?}", command)),
         }
+    }
+
+    pub fn write_init() {}
+
+    pub fn write_label(&mut self, label: &str) -> Result<()> {
+        Ok(self.file.write_fmt(format_args!(
+            "({})
+            ",
+            label
+        ))?)
+    }
+
+    pub fn write_goto(&mut self, label: &str) -> Result<()> {
+        Ok(())
+    }
+
+    pub fn write_if(&mut self, label: &str) -> Result<()> {
+        Ok(())
+    }
+
+    pub fn write_call(&mut self, function_name: &str, num_args: u32) -> Result<()> {
+        Ok(())
+    }
+
+    pub fn write_return(&mut self) -> Result<()> {
+        Ok(())
+    }
+
+    pub fn write_function(&mut self, function_name: &str, num_locals: u32) -> Result<()> {
+        Ok(())
     }
 }
