@@ -446,11 +446,24 @@ M=M+1
     }
 
     pub fn write_goto(&mut self, label: &str) -> Result<()> {
-        Ok(())
+        Ok(self.file.write_fmt(format_args!(
+            "@{}
+            0;JMP
+            ",
+            label
+        ))?)
     }
 
     pub fn write_if(&mut self, label: &str) -> Result<()> {
-        Ok(())
+        Ok(self.file.write_fmt(format_args!(
+            "@SP
+            AM=M-1
+            D=M
+            @{}
+            D;JNE
+            ",
+            label
+        ))?)
     }
 
     pub fn write_call(&mut self, function_name: &str, num_args: u32) -> Result<()> {
