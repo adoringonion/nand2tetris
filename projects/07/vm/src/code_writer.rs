@@ -435,7 +435,14 @@ M=M+1
         }
     }
 
-    pub fn write_init() {}
+    pub fn write_init(&mut self) -> Result<()> {
+        Ok(self.file.write_fmt(format_args!(
+            "@256
+            D=A
+            @SP
+            M=D"
+        ))?)
+    }
 
     pub fn write_label(&mut self, label: &str) -> Result<()> {
         Ok(self.file.write_fmt(format_args!(
@@ -467,14 +474,141 @@ M=M+1
     }
 
     pub fn write_call(&mut self, function_name: &str, num_args: u32) -> Result<()> {
-        Ok(())
+        self.label_count += 1;
+        Ok(self.file.write_fmt(format_args!(
+            "@RETURN.{}
+            D=A
+            @SP
+            A=M
+            M=D
+            @SP
+            M=M+1
+            @LCL
+            D=M
+            @SP
+            A=M
+            M=D
+            @SP
+            M=M+1
+            @ARG
+            D=M
+            @SP
+            A=M
+            M=D
+            @SP
+            M=M+1
+            @THIS
+            D=M
+            @SP
+            A=M
+            M=D
+            @SP
+            M=M+1
+            @THAT
+            D=M
+            @SP
+            A=M
+            M=D
+            @SP
+            M=M+1
+            @SP
+            D=M
+            @5
+            D=D-A
+            @{}
+            D=D-A
+            @ARG
+            M=D
+            @SP
+            D=M
+            @LCL
+            M=D
+            @{}
+            0;JMP
+            (RETURN.{})
+            ",
+            self.label_count, num_args, function_name, self.label_count
+        ))?)
     }
 
     pub fn write_return(&mut self) -> Result<()> {
-        Ok(())
+        Ok(self.file.write_fmt(format_args!(
+            "@LCL
+            D=M
+            @R13
+            M=D
+            @5
+            D=A
+            @R13
+            A=M-D
+            D=M
+            @R14
+            M=D
+            @SP
+            AM=M-1
+            D=M
+            @ARG
+            A=M
+            M=D
+            @ARG
+            D=M+1
+            @SP
+            M=D
+            @R13
+            D=M-1
+            @THAT
+            M=D
+            @R13
+            D=M-1
+            @THIS
+            M=D
+            @R13
+            D=M-1
+            @ARG
+            M=D
+            @R13
+            D=M-1
+            @LCL
+            M=D
+            @R14
+            A=M
+            0;JMP
+            "
+        ))?)
     }
 
     pub fn write_function(&mut self, function_name: &str, num_locals: u32) -> Result<()> {
-        Ok(())
+        self.label_count += 1;
+        Ok(self.file.write_fmt(format_args!(
+            "({})
+            @{}
+            D=A
+            @R13
+            M=D
+            @WHILE1.{}
+            @R13
+            D=M
+            @WHILE2.{}
+            D;JNE
+            (WHILE1.{})
+            @0
+            D=A
+            @SP
+            A=M
+            M=D
+            @SP
+            M=M+1
+            @R13
+            D=M
+            @1
+            D=D-A
+            @R13
+            M=D
+            @WHILE1.{}
+            0;JMP
+            (WHILE2.{})
+            ",
+            function_name, num_locals, self.label_count, self.label_count, self.label_count, self.label_count, self.label_count
+        ))?)
     }
 }

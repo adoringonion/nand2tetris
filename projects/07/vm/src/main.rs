@@ -16,6 +16,7 @@ fn main() -> Result<()> {
 
     let mut parser = Parser::new(file);
     let mut code_writer = code_writer::CodeWriter::new(Path::new(file_path).file_stem().unwrap().to_str().unwrap());
+    code_writer.write_init()?;
 
     loop {
         match parser.command_type() {
