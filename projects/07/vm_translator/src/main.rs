@@ -16,7 +16,7 @@ fn main() -> Result<()> {
 
     if file_path.is_dir() {
         return Ok(multi_vm(&file_path)?);
-    } else if file_path.extension().unwrap() == "vm" {
+    } else if file_path.extension().context("can't read extension")? == "vm" {
         return Ok(single_vm(file_path)?);
     } else {
         return Err(anyhow!("Invalid file path"));
@@ -25,7 +25,7 @@ fn main() -> Result<()> {
 
 fn single_vm(file_path: &Path) -> Result<()> {
     let mut code_writer =
-        code_writer::CodeWriter::new(file_path.file_stem().unwrap().to_str().unwrap());
+        code_writer::CodeWriter::new(file_path);
     code_writer.write_init()?;
     let file = File::open(file_path)?;
     let mut parser = Parser::new(file);
@@ -78,12 +78,12 @@ fn single_vm(file_path: &Path) -> Result<()> {
 fn multi_vm(file_path: &Path) -> Result<()> {
     let files = fs::read_dir(file_path).context("Failed to read directory")?;
     let mut code_writer =
-        code_writer::CodeWriter::new(file_path.file_stem().unwrap().to_str().unwrap());
+        code_writer::CodeWriter::new(file_path);
     code_writer.write_init()?;
 
     for vm in files.into_iter() {
         let vm = vm.context("Failed to read vm file")?;
-        if vm.path().extension().unwrap() != "vm" {
+        if vm.path().extension().context("can't read extension")? != "vm" {
             continue;
         }
 

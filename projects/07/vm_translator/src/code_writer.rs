@@ -1,5 +1,5 @@
 use anyhow::{anyhow, Result};
-use std::{fs::File, io::Write};
+use std::{fs::File, io::Write, path::Path};
 
 use crate::parser::CommandType;
 
@@ -11,10 +11,18 @@ pub struct CodeWriter {
 }
 
 impl CodeWriter {
-    pub fn new(file_name: &str) -> Self {
-        let file = File::create(format!("{}.asm", file_name)).unwrap();
+    pub fn new(path: &Path) -> Self {
+        let file = if path.is_file() {
+            let file = File::create(path.with_extension("asm")).unwrap();
+            file
+        } else {
+            let file_name = path.file_stem().unwrap().to_str().unwrap();
+            let file = File::create(path.join(format!("{}.asm", file_name))).unwrap();
+            file
+        };
+
         CodeWriter {
-            file_name: file_name.to_string(),
+            file_name: String::from(path.to_string_lossy()),
             file,
             label_count: 0,
             current_function: None,
@@ -450,18 +458,16 @@ M=M+1
 
     pub fn write_label(&mut self, label: &str) -> Result<()> {
         match &self.current_function {
-            Some(function) => {
-                Ok(self.file.write_fmt(format_args!(
-                    "({}${})
+            Some(function) => Ok(self.file.write_fmt(format_args!(
+                "({}${})
                     ",
-                    function, label
-                ))?)
-            }
-            None => {Ok(self.file.write_fmt(format_args!(
+                function, label
+            ))?),
+            None => Ok(self.file.write_fmt(format_args!(
                 "({})
                 ",
                 label
-            ))?)},
+            ))?),
         }
     }
 
