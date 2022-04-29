@@ -234,208 +234,220 @@ M=M+1
                 ))?),
                 "local" => Ok(self.file.write_fmt(format_args!(
                     "
-                    @{}
-                    D=A
-                    @LCL
-                    A=M+D
-                    D=M
-                    @SP
-                    A=M
-                    M=D
-                    @SP
-                    M=M+1
-                    ",
+@{}
+D=A
+@LCL
+A=M+D
+D=M
+@SP
+A=M
+M=D
+@SP
+M=M+1
+",
                     index
                 ))?),
                 "argument" => Ok(self.file.write_fmt(format_args!(
                     "
-                    @{}
-                    D=A
-                    @ARG
-                    A=M+D
-                    D=M
-                    @SP
-                    A=M
-                    M=D
-                    @SP
-                    M=M+1
-                    ",
+@{}
+D=A
+@ARG
+A=M+D
+D=M
+@SP
+A=M
+M=D
+@SP
+M=M+1
+",
                     index
                 ))?),
                 "this" => Ok(self.file.write_fmt(format_args!(
-                    "@{}
-                    D=A
-                    @THIS
-                    A=M+D
-                    D=M
-                    @SP
-                    A=M
-                    M=D
-                    @SP
-                    M=M+1
-                    ",
+                    "
+@{}
+D=A
+@THIS
+A=M+D
+D=M
+@SP
+A=M
+M=D
+@SP
+M=M+1
+",
                     index
                 ))?),
                 "that" => Ok(self.file.write_fmt(format_args!(
-                    "@{}
-                    D=A
-                    @THAT
-                    A=M+D
-                    D=M
-                    @SP
-                    A=M
-                    M=D
-                    @SP
-                    M=M+1
-                    ",
+                    "
+@{}
+D=A
+@THAT
+A=M+D
+D=M
+@SP
+A=M
+M=D
+@SP
+M=M+1
+",
                     index
                 ))?),
                 "temp" => Ok(self.file.write_fmt(format_args!(
-                    "@{}
-                    D=A
-                    @5
-                    A=A+D
-                    D=M
-                    @SP
-                    A=M
-                    M=D
-                    @SP
-                    M=M+1
-                    ",
+                    "
+@{}
+D=A
+@5
+A=A+D
+D=M
+@SP
+A=M
+M=D
+@SP
+M=M+1
+",
                     index
                 ))?),
                 "pointer" => Ok(self.file.write_fmt(format_args!(
-                    "@{}
-                    D=A
-                    @3
-                    A=A+D
-                    D=M
-                    @SP
-                    A=M
-                    M=D
-                    @SP
-                    M=M+1
-                    ",
+                    "
+@{}
+D=A
+@3
+A=A+D
+D=M
+@SP
+A=M
+M=D
+@SP
+M=M+1
+",
                     index
                 ))?),
                 "static" => Ok(self.file.write_fmt(format_args!(
-                    "@{}.{}
-                    D=M
-                    @SP
-                    A=M
-                    M=D
-                    @SP
-                    M=M+1 
-                    ",
+                    "
+@{}.{}
+D=M
+@SP
+A=M
+M=D
+@SP
+M=M+1 
+",
                     self.file_name, index
                 ))?),
                 _ => Err(anyhow!("Invalid segment: {}", segment)),
             },
             CommandType::CPop => match segment {
                 "local" => Ok(self.file.write_fmt(format_args!(
-                    "@{}
-                    D=A
-                    @LCL
-                    D=M+D
-                    @R13
-                    M=D
-                    @SP
-                    AM=M-1
-                    D=M
-                    @R13
-                    A=M
-                    M=D
-                    ",
+                    "
+@{}
+D=A
+@LCL
+D=M+D
+@R13
+M=D
+@SP
+AM=M-1
+D=M
+@R13
+A=M
+M=D
+",
                     index
                 ))?),
                 "argument" => Ok(self.file.write_fmt(format_args!(
-                    "@{}
-                    D=A
-                    @ARG
-                    D=M+D
-                    @R13
-                    M=D
-                    @SP
-                    AM=M-1
-                    D=M
-                    @R13
-                    A=M
-                    M=D
-                    ",
+                    "
+@{}
+D=A
+@ARG
+D=M+D
+@R13
+M=D
+@SP
+AM=M-1
+D=M
+@R13
+A=M
+M=D
+",
                     index
                 ))?),
                 "this" => Ok(self.file.write_fmt(format_args!(
-                    "@{}
-                    D=A
-                    @THIS
-                    D=M+D
-                    @R13
-                    M=D
-                    @SP
-                    AM=M-1
-                    D=M
-                    @R13
-                    A=M
-                    M=D
-                    ",
+                    "
+@{}
+D=A
+@THIS
+D=M+D
+@R13
+M=D
+@SP
+AM=M-1
+D=M
+@R13
+A=M
+M=D
+",
                     index
                 ))?),
                 "that" => Ok(self.file.write_fmt(format_args!(
-                    "@{}
-                    D=A
-                    @THAT
-                    D=M+D
-                    @R13
-                    M=D
-                    @SP
-                    AM=M-1
-                    D=M
-                    @R13
-                    A=M
-                    M=D
-                    ",
+                    "
+@{}
+D=A
+@THAT
+D=M+D
+@R13
+M=D
+@SP
+AM=M-1
+D=M
+@R13
+A=M
+M=D
+",
                     index
                 ))?),
                 "temp" => Ok(self.file.write_fmt(format_args!(
-                    "@{}
-                    D=A
-                    @5
-                    D=A+D
-                    @R13
-                    M=D
-                    @SP
-                    AM=M-1
-                    D=M
-                    @R13
-                    A=M
-                    M=D
-                    ",
+                    "
+@{}
+D=A
+@5
+D=A+D
+@R13
+M=D
+@SP
+AM=M-1
+D=M
+@R13
+A=M
+M=D
+",
                     index
                 ))?),
                 "pointer" => Ok(self.file.write_fmt(format_args!(
-                    "@{}
-                    D=A
-                    @3
-                    D=A+D
-                    @R13
-                    M=D
-                    @SP
-                    AM=M-1
-                    D=M
-                    @R13
-                    A=M
-                    M=D
-                    ",
+                    "
+@{}
+D=A
+@3
+D=A+D
+@R13
+M=D
+@SP
+AM=M-1
+D=M
+@R13
+A=M
+M=D
+",
                     index
                 ))?),
                 "static" => Ok(self.file.write_fmt(format_args!(
-                    "@SP
-                    M=M-1
-                    A=M
-                    D=M
-                    @{}.{}
-                    M=D
-                    ",
+                    "
+@SP
+M=M-1
+A=M
+D=M
+@{}.{}
+M=D
+",
                     self.file_name, index
                 ))?),
                 _ => Err(anyhow!("Invalid segment: {}", segment)),
@@ -446,11 +458,12 @@ M=M+1
 
     pub fn write_init(&mut self) -> Result<()> {
         self.file.write_fmt(format_args!(
-            "@256
-            D=A
-            @SP
-            M=D
             "
+@256
+D=A
+@SP
+M=D
+"
         ))?;
         self.write_call("Sys.init", 0)?;
         Ok(())
@@ -458,31 +471,27 @@ M=M+1
 
     pub fn write_label(&mut self, label: &str) -> Result<()> {
         match &self.current_function {
-            Some(function) => Ok(self.file.write_fmt(format_args!(
-                "({}${})
-                    ",
-                function, label
-            ))?),
-            None => Ok(self.file.write_fmt(format_args!(
-                "({})
-                ",
-                label
-            ))?),
+            Some(function) => Ok(self
+                .file
+                .write_fmt(format_args!("({}${})", function, label))?),
+            None => Ok(self.file.write_fmt(format_args!("({})", label))?),
         }
     }
 
     pub fn write_goto(&mut self, label: &str) -> Result<()> {
         match &self.current_function {
             Some(function) => Ok(self.file.write_fmt(format_args!(
-                "@{}${}
-                0;JMP
-                ",
+                "
+@{}${}
+0;JMP
+",
                 function, label
             ))?),
             None => Ok(self.file.write_fmt(format_args!(
-                "@{}
-                0;JMP
-                ",
+                "
+@{}
+0;JMP
+",
                 label
             ))?),
         }
@@ -491,21 +500,23 @@ M=M+1
     pub fn write_if(&mut self, label: &str) -> Result<()> {
         match &self.current_function {
             Some(function) => Ok(self.file.write_fmt(format_args!(
-                "@SP
-                AM=M-1
-                D=M
-                @{}${}
-                D;JNE
-                ",
+                "
+@SP
+AM=M-1
+D=M
+@{}${}
+D;JNE
+",
                 function, label
             ))?),
             None => Ok(self.file.write_fmt(format_args!(
-                "@SP
-                AM=M-1
-                D=M
-                @{}
-                D;JNE
-                ",
+                "
+@SP
+AM=M-1
+D=M
+@{}
+D;JNE
+",
                 label
             ))?),
         }
@@ -514,128 +525,130 @@ M=M+1
     pub fn write_call(&mut self, function_name: &str, num_args: u32) -> Result<()> {
         self.label_count += 1;
         Ok(self.file.write_fmt(format_args!(
-            "@RETURN.{}
-            D=A
-            @SP
-            A=M
-            M=D
-            @SP
-            M=M+1
+            "
+@RETURN.{}
+D=A
+@SP
+A=M
+M=D
+@SP
+M=M+1
 
-            @LCL
-            D=M
-            @SP
-            A=M
-            M=D
-            @SP
-            M=M+1
+@LCL
+D=M
+@SP
+A=M
+M=D
+@SP
+M=M+1
 
-            @ARG
-            D=M
-            @SP
-            A=M
-            M=D
-            @SP
-            M=M+1
+@ARG
+D=M
+@SP
+A=M
+M=D
+@SP
+M=M+1
 
-            @THIS
-            D=M
-            @SP
-            A=M
-            M=D
-            @SP
-            M=M+1
+@THIS
+D=M
+@SP
+A=M
+M=D
+@SP
+M=M+1
 
-            @THAT
-            D=M
-            @SP
-            A=M
-            M=D
-            @SP
-            M=M+1
+@THAT
+D=M
+@SP
+A=M
+M=D
+@SP
+M=M+1
 
-            @SP
-            D=M
-            @5
-            D=D-A
-            @{}
-            D=D-A
-            @ARG
-            M=D
-            @SP
-            D=M
-            @LCL
-            M=D
-            @{}
-            0;JMP
-            (RETURN.{})
-            ",
+@SP
+D=M
+@5
+D=D-A
+@{}
+D=D-A
+@ARG
+M=D
+@SP
+D=M
+@LCL
+M=D
+@{}
+0;JMP
+(RETURN.{})
+",
             self.label_count, num_args, function_name, self.label_count
         ))?)
     }
 
     pub fn write_return(&mut self) -> Result<()> {
         Ok(self.file.write_fmt(format_args!(
-            "@LCL
-            D=M
-            @R13
-            M=D
-
-            @5
-            D=A
-            @R13
-            A=M-D
-            D=M
-            @R14
-            M=D
-
-            @SP
-            AM=M-1
-            D=M
-            @ARG
-            A=M
-            M=D
-            @ARG
-            D=M+1
-            @SP
-            M=D
-
-            @1
-            D=A
-            @R13
-            A=M-D
-            D=M
-            @THAT
-            M=D
-            
-            @2
-            D=A
-            @R13
-            A=M-D
-            D=M
-            @THIS
-            M=D
-
-            @3
-            D=A
-            @R13
-            A=M-D
-            D=M
-            @ARG
-            M=D
-
-            @4
-            D=A
-            @R13
-            A=M-D
-            D=M
-            @LCL
-            M=D
-
-            @R14
-            A=M
-            0;JMP
             "
+@LCL
+D=M
+@R13
+M=D
+
+@5
+D=A
+@R13
+A=M-D
+D=M
+@R14
+M=D
+
+@SP
+AM=M-1
+D=M
+@ARG
+A=M
+M=D
+@ARG
+D=M+1
+@SP
+M=D
+
+@1
+D=A
+@R13
+A=M-D
+D=M
+@THAT
+M=D
+
+@2
+D=A
+@R13
+A=M-D
+D=M
+@THIS
+M=D
+
+@3
+D=A
+@R13
+A=M-D
+D=M
+@ARG
+M=D
+
+@4
+D=A
+@R13
+A=M-D
+D=M
+@LCL
+M=D
+
+@R14
+A=M
+0;JMP
+"
         ))?)
     }
 
@@ -643,33 +656,34 @@ M=M+1
         self.label_count += 1;
         self.current_function = Some(function_name.to_string());
         Ok(self.file.write_fmt(format_args!(
-            "({})
-            @{}
-            D=A
-            @R13
-            M=D
-            (WHILE1.{})
-            @R13
-            D=M
-            @WHILE2.{}
-            D;JEQ
-            @0
-            D=A
-            @SP
-            A=M
-            M=D
-            @SP
-            M=M+1
-            @R13
-            D=M
-            @1
-            D=D-A
-            @R13
-            M=D
-            @WHILE1.{}
-            0;JMP
-            (WHILE2.{})
-            ",
+            "
+({})
+@{}
+D=A
+@R13
+M=D
+(WHILE1.{})
+@R13
+D=M
+@WHILE2.{}
+D;JEQ
+@0
+D=A
+@SP
+A=M
+M=D
+@SP
+M=M+1
+@R13
+D=M
+@1
+D=D-A
+@R13
+M=D
+@WHILE1.{}
+0;JMP
+(WHILE2.{})
+",
             function_name,
             num_locals,
             self.label_count,
